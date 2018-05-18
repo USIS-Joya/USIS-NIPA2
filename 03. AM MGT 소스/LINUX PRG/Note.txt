@@ -1,0 +1,23 @@
+LINUX PRG 내의 폴더
+
+fxPractice : Java Projects into Workspace
+
+Referenced Libraries MongoDB jar File: mongo-3.2.2
+Referenced Libraries poi jar File: poi-3.17
+
+Excel File : Usis-AM-Data-Extract
+
+프로그램 상에서 Usis-AM-Data-Extract는 D:\\Usis-AM-Data-Extract에 존재합니다.
+또한, mongoDB의 db명은 test로 설정하였고, 프로그램이 실행되면 test안에 collection단위로 insert될 것입니다.
+--------------------------------------------------------------------------------------------
+현재 진행사항
+1.수행작업, 화면관리 TAB: Table구성 및 setMain (O)
+2.환경설정 TAB: mongoDB ip:127.0.0.1 , port:27017 (연결 O)
+3.  	        Folder Path 지정 : 추가, 삭제, 수정 버튼 추가 (O)/ Save(X)
+4.프로그램이 실행될 때, D:\\Usis-AM-Data-Extract안에 있던 xls파일이 mongoDB에 Import(O)
+
+다음 업데이트 예정 사항
+1.하나의 Object에 2개의 Field Value가 생성됨 (하나의 Object에 한 열의 Value값 생성되어야함)
+duplicate key error index // 수정예정
+2.수행작업 TAB: 파라미터로 값을 입력받아 DB에 추가 될 때, Table에 갱신 // 추가예정
+------------------------------------------------------------------------------------------180518
