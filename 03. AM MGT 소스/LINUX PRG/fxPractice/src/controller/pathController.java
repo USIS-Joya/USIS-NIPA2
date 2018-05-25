@@ -1,5 +1,7 @@
 package controller;
 
+import java.io.File;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -9,13 +11,16 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import model.path;
+import model.performance;
 
 public class pathController {
 	@FXML
 	private TextField pathField;
 	private int returnValue = 0;
 	private Stage dialogStage;
+
 	private path path;
+	private performance perform;
 
 	@FXML
 	private void initialize() {
@@ -26,7 +31,12 @@ public class pathController {
 		this.dialogStage = dialogStage;
 	}
 
+	public void setPerform(performance perform) {
+		this.perform = perform;
+	}
+
 	// 하나의 경로를 저장합니다.
+	//180525
 	public void setPath(path path) {
 		this.path = path;
 		pathField.setText(path.getPath());
@@ -40,9 +50,20 @@ public class pathController {
 	// 현재 사용자가 입력한 값이 정확한 지 파악하고 정확한 경우 반환값에 1을 넣어주고 다이얼로그를 닫습니다.
 	@FXML
 	private void confirmAction() {
-		if (valid()) {
+		File clsFolder = new File(pathField.getText());
+		// getFileName - 180524
+		if (isCorrect()) {
 			path.setPath(pathField.getText());
-			// System.out.println(pathField.getText());
+			if (clsFolder.exists() == false) {
+				System.out.println("folder is not found");
+			} else {
+				File[] arrFile = clsFolder.listFiles();
+				perform.setFilePath(pathField.getText());
+
+				for (int i = 0; i < arrFile.length; ++i) {
+					perform.setFileName(arrFile[i].getName());
+				}
+			}
 			returnValue = 1;
 			dialogStage.close();
 		}
@@ -55,7 +76,7 @@ public class pathController {
 	}
 
 	// 모든 입력 값들을 확인한 뒤에 비어있으면 오류메세지를 띄우고 비어있지 않으면 성공적으로 True값을 반환
-	private boolean valid() {
+	private boolean isCorrect() {
 		String errorMessage = "";
 		if (pathField.getText() == null || pathField.getText().equals("")) {
 			errorMessage += "경로를 입력하세요.\n";
@@ -74,13 +95,4 @@ public class pathController {
 		}
 	}
 
-	// public ObservableList<path> getPathList() {
-	// ObservableList<path> pathList = FXCollections.observableArrayList();
-	// try {
-	// pathList.add(path);
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// return pathList;
-	// }
 }

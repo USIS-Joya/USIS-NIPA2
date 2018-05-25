@@ -19,7 +19,7 @@ public class management {
 		this.End = new SimpleStringProperty(end);
 	}
 
-	// file name
+	// File Name
 	public String getFileName() {
 		return FileName.get();
 	}
@@ -32,7 +32,7 @@ public class management {
 		return FileName;
 	}
 
-	// file path
+	// File Path
 	public String getFilePath() {
 		return FilePath.get();
 	}
@@ -45,7 +45,7 @@ public class management {
 		return FilePath;
 	}
 
-	// file start
+	// File Start
 	public String getStart() {
 		return Start.get();
 	}
@@ -58,7 +58,7 @@ public class management {
 		return Start;
 	}
 
-	// file progress
+	// File Progress
 	public String getEnd() {
 		return End.get();
 	}

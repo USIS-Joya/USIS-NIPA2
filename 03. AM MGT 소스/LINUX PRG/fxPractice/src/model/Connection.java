@@ -21,9 +21,8 @@ public class Connection {
 
 	public String MongoDB_IP = "127.0.0.1";
 	public int MongoDB_PORT = 27017;
-	public String value = "";
-	public String key = "";
-	// public String DBName = "test";
+	private String value = "";
+	private String key = "";
 
 	public void setIP(String IP) {
 		MongoDB_IP = IP;
@@ -48,11 +47,11 @@ public class Connection {
 		// System.out.println("Inserted Success..");
 	}
 
-	public void DBConnection() {
+	public void DBConnection(String PathName) {
 		try {
 			MongoClient mongoClient = new MongoClient(new ServerAddress(getIP(), getPort()));
 			DB db = mongoClient.getDB("test");
-			File clsFolder = new File("D:\\Usis-AM-Data-Extract");
+			File clsFolder = new File(PathName);
 
 			if (clsFolder.exists() == false) {
 				System.out.println("folder is not found");
@@ -64,7 +63,7 @@ public class Connection {
 					String[] arr = arrFile[i].getName().split("-");
 					DBCollection collection = db.getCollection(arr[2]);
 					// File Data ÀÐ±â- 180516 CWJ
-					FileInputStream fis = new FileInputStream("D:\\Usis-AM-Data-Extract\\" + arrFile[i].getName());
+					FileInputStream fis = new FileInputStream(PathName + arrFile[i].getName());
 					HSSFWorkbook workbook = new HSSFWorkbook(fis);
 
 					int rowindex = 0;

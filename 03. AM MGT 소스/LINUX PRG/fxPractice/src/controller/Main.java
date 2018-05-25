@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Scanner;
@@ -10,9 +11,13 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.w3c.dom.Node;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+import com.mongodb.ServerAddress;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -27,7 +32,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Connection;
@@ -38,8 +42,9 @@ import model.performance;
 public class Main extends Application {
 	private Main main;
 	private Stage primaryStage;
-	// private static String value = "";
-	// private BorderPane rootLayout;
+	public static String PathFile = "D:\\\\Usis-AM-Data-Extract\\";
+	public static String value = "";
+	public static String key = "";
 
 	// 수행작업 Tab- Performance Table - 180515 CWJ
 	private ObservableList<performance> performList = FXCollections.observableArrayList();
@@ -86,11 +91,6 @@ public class Main extends Application {
 	//
 
 	public ObservableList<path> getPathList() {
-		// try {
-		// pathList.add(path);
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
 		return pathList;
 	}
 
@@ -105,22 +105,26 @@ public class Main extends Application {
 	}
 
 	public Main() {
-		pathList.add(new path("D:\\Usis-AM-Data-Extract"));
+		// pathList.add(new path("D:\\Usis-AM-Data-Extract"));
+		// performList.add(new performance("", "", "", ""));
+		// manageList.add(new management("", "", "", ""));
 	}
 
 	@FXML
 	private void initialize() {
 
 		/// m_FileName,m_FilePath,m_Start,m_End
-		p_FileName.setCellValueFactory(cellData -> cellData.getValue().getFilePathProperty());
+		p_FileName.setCellValueFactory(cellData -> cellData.getValue().getFileNameProperty());
 		p_FilePath.setCellValueFactory(cellData -> cellData.getValue().getFilePathProperty());
-		p_Start.setCellValueFactory(cellData -> cellData.getValue().getFilePathProperty());
-		p_Progress.setCellValueFactory(cellData -> cellData.getValue().getFilePathProperty());
+		p_Start.setCellValueFactory(cellData -> cellData.getValue().getStartProperty());
+		p_Progress.setCellValueFactory(cellData -> cellData.getValue().getProgressProperty());
+		// performTable.setItems(performList);
 
-		m_FileName.setCellValueFactory(cellData -> cellData.getValue().getFilePathProperty());
+		m_FileName.setCellValueFactory(cellData -> cellData.getValue().getFileNameProperty());
 		m_FilePath.setCellValueFactory(cellData -> cellData.getValue().getFilePathProperty());
-		m_Start.setCellValueFactory(cellData -> cellData.getValue().getFilePathProperty());
-		m_End.setCellValueFactory(cellData -> cellData.getValue().getFilePathProperty());
+		m_Start.setCellValueFactory(cellData -> cellData.getValue().getStartProperty());
+		m_End.setCellValueFactory(cellData -> cellData.getValue().getEndProperty());
+		// manageTable.setItems(manageList);
 
 		folderName.setCellValueFactory(cellData -> cellData.getValue().getPathProperty());
 	}
@@ -135,8 +139,11 @@ public class Main extends Application {
 		getPerformList().add(perform);
 		getManagementList().add(manage);
 		getPathList().add(path);
-		// pathController controller = new pathController();
-		// controller.getPathList().add(path);
+
+		// performance perform = new performance("","","","");
+		// perform.setFileName(PathFile);
+		// performTable.getItems().add(perform);
+
 		performTable.setItems(main.getPerformList());
 		manageTable.setItems(main.getManagementList());
 		pathTable.setItems(main.getPathList());
@@ -147,11 +154,38 @@ public class Main extends Application {
 		this.primaryStage.setTitle("Test");
 		// setRootLayout();
 		setMainView();
+
+		// run in background thread-180524 CWJ
+		new Thread() {
+			@Override
+			public void run() {
+				readFile();
+			};
+		}.start();
+	}
+
+	private void readFile() {
+		File clsFolder = new File(PathFile);
+
+		if (clsFolder.exists() == false) {
+			System.out.println("folder is not found");
+		} else {
+			File[] arrFile = clsFolder.listFiles();
+
+			for (int i = 0; i < arrFile.length; ++i) {
+				System.out.println("arrFile["+i+"] = " + arrFile[i].getName());
+				// perform.setFileName("ddddd");
+				// System.out.println("ddddd");
+				// performTable.getItems().add(perform);
+
+				// performTable.setItems(performList);
+			}
+		}
 	}
 
 	// 매개변수로 넘어온 하나의 단어 데이터를 이용해서 path관리화면을 띄웁니다.
 	// 이후에 종료되고 넘어온 반환 값을 그대로 다시 한 번 반환
-	public int setpathDataView(path path) {
+	public int setpathDataView(path path, performance perform) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(Main.class.getResource("../view/pathView.fxml"));
@@ -167,7 +201,7 @@ public class Main extends Application {
 			pathController controller = loader.getController();
 			controller.setDialogStage(dialogStage);
 			controller.setPath(path);
-
+			controller.setPerform(perform);
 			dialogStage.showAndWait();
 			return controller.getReturnValue();
 		} catch (Exception e) {
@@ -196,12 +230,14 @@ public class Main extends Application {
 	@FXML
 	private void pathAction() {
 		path path = new path("");
-		int returnValue = main.setpathDataView(path);
+		performance perform = new performance("", "", "", "");
+		int returnValue = main.setpathDataView(path, perform);
 
 		if (returnValue == 1) {
 			main.getPathList().add(path);
-			// pathController controller = new pathController();
-			// controller.getPathList().add(path);
+			// add columns 180524
+			main.getPerformList().add(perform);
+
 		}
 	}
 
@@ -210,7 +246,7 @@ public class Main extends Application {
 	private void modifyAction() {
 		path path = pathTable.getSelectionModel().getSelectedItem();
 		if (path != null) {
-			main.setpathDataView(path);
+			main.setpathDataView(path, null);
 		} else {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.initOwner(main.getPrimaryStage());
@@ -245,7 +281,7 @@ public class Main extends Application {
 			conn.setIP(txt_ip.getText());
 			String str_port = txt_port.getText();
 			int Port = Integer.parseInt(str_port);
-			conn.setPort(Port);
+			// conn.setPort(Port);
 
 			//
 			System.out.println("MongoDB IP : " + conn.getIP().toString());
@@ -253,6 +289,7 @@ public class Main extends Application {
 			//
 		} catch (Exception e) {
 			e.printStackTrace();
+
 		}
 	}
 
@@ -262,13 +299,13 @@ public class Main extends Application {
 		try {
 			Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
 			mongoLogger.setLevel(Level.SEVERE);
-			Connection conn = new Connection();
-			//db연결 및 insert
-			conn.DBConnection();
+
 			isConn = true;
 			if (isConn) {
 				System.out.println("MongoDB연결");
-
+				Connection conn = new Connection();
+				// db연결 및 insert
+				conn.DBConnection(PathFile);
 			} else {
 				System.out.println("연결 실패");
 				return;

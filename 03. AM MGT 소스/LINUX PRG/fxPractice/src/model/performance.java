@@ -19,7 +19,7 @@ public class performance {
 		this.Progress = new SimpleStringProperty(progress);
 	}
 
-	// file name
+	// File Name
 	public String getFileName() {
 		return FileName.get();
 	}
@@ -32,7 +32,7 @@ public class performance {
 		return FileName;
 	}
 
-	// file path
+	// File Path
 	public String getFilePath() {
 		return FilePath.get();
 	}
@@ -45,7 +45,7 @@ public class performance {
 		return FilePath;
 	}
 
-	// file start
+	// File Start
 	public String getStart() {
 		return Start.get();
 	}
