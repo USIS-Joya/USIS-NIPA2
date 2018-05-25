@@ -16,21 +16,17 @@ public class Main extends Application {
 	private Stage primaryStage;
 	private BorderPane rootLayout;
 	private ObservableList<Word> wordList = FXCollections.observableArrayList();
-	private ObservableList<Load> loadList = FXCollections.observableArrayList();
+	
 
 	
 	public Main() {
 	
-		
-	loadList.add(new Load("테스트1","테스트2","테스트3","테스트4"));
 	}
 	
 	public ObservableList<Word> getWordList() {
 		return wordList;
 	}
-	public ObservableList<Load> getLoadList() {
-		return loadList;
-	}
+	
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
@@ -84,7 +80,7 @@ public class Main extends Application {
 			WordDataController controller = loader.getController();
 			controller.setDialogStage(dialogStage);
 			controller.setWord(word);
-			
+						
 
 			dialogStage.showAndWait();
 			return controller.getReturnValue();
@@ -93,6 +89,8 @@ public class Main extends Application {
 			return 0;
 		}
 	}
+	
+	
 	//현재의 메인 스테이지를 반환
 	public Stage getPrimaryStage() {
 		return primaryStage;

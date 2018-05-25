@@ -1,5 +1,7 @@
 package controller;
 
+import java.nio.file.Path;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -9,8 +11,8 @@ public class Load {
 	private final StringProperty content;
 	private final StringProperty time;
 	
-	public Load(String filename,String filepath,String content,String time) {
-		this.filename = new SimpleStringProperty(filename);
+	public Load(String id,String filepath,String content,String time) {
+		this.filename = new SimpleStringProperty(id);
 		this.filepath = new SimpleStringProperty(filepath);
 		this.content = new SimpleStringProperty(content);
 		this.time = new SimpleStringProperty(time);
