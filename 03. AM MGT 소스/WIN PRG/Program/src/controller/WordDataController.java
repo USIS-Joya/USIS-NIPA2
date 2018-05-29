@@ -19,7 +19,7 @@ private TextField nextField; // 다음 경로
 private Stage dialogStage;
 private Word word;
 private int returnValue = 0;
-
+public static String[][] data;
 
 @FXML
 private void initialize() {
@@ -40,6 +40,10 @@ private void initialize() {
 	  if(valid()) {
 		  word.setNow(nowField.getText());
 		  word.setNext(nextField.getText());
+		  
+		  for(int i=0; i<=100; i++) {
+			  
+		  }
 		  returnValue=1;
 		  dialogStage.close();
 	  }
@@ -73,9 +77,15 @@ private void initialize() {
 	  if(nextField.getText() ==null || nextField.getText().equals("")) {
 		  errorMessage += "이동경로를 입력하세요. \n";
 	  }
-	  if(errorMessage.equals("")) {
+	  if(!nowField.getText().contains("\\")) {
+		  errorMessage += "현재경로를 재대로 입력해 주세요 \n" ;
+	  }if(!nextField.getText().contains("\\")) {
+		  errorMessage += "이동경로를 재대로 입력해 주세요 \n";
+	  }if(errorMessage.equals("")) {
 		  return true;
-	  }else {
+	  }
+	  	
+	  else {
 		  Alert alert = new Alert(AlertType.ERROR);
 		  alert.initOwner(dialogStage);
 		  alert.setTitle("오류 메시지");

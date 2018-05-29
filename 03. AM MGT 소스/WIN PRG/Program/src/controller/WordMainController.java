@@ -1,6 +1,11 @@
 package controller;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,6 +18,8 @@ import java.text.SimpleDateFormat;
 
 import java.util.Calendar;
 import java.util.List;
+
+
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -43,6 +50,8 @@ public class WordMainController {
 	private TableColumn<Load, String> time;
 	private Main main;
 	private ObservableList<Load> loadList = FXCollections.observableArrayList();
+	
+	private int i;
 	private String today;
 	
 
@@ -61,13 +70,12 @@ public class WordMainController {
 		wordTable.setItems(main.getWordList());
 		
 		
+		
 		loadTable.setItems(loadList);
 		
 	}
 	public WordMainController() {
-		SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
-		Calendar cal = Calendar.getInstance();
-		today = formatter.format(cal.getTime());  // 현재시간 나타내는 표
+		
 		
 		
 	}
@@ -98,7 +106,7 @@ public class WordMainController {
 			alert.initOwner(main.getPrimaryStage());
 			alert.setTitle("오류 메시지");
 			alert.setHeaderText("선택 오류가 발생했습니다.");
-			alert.setContentText("삭제할 메뉴를 선택해주세요.");
+			alert.setContentText("삭제 할 메뉴를 선태해주세요");
 			alert.showAndWait();
 		}
 	}
@@ -107,13 +115,9 @@ public class WordMainController {
 	}
 	
 	@FXML
-	private void startAction(ActionEvent a)  {
+	private void startAction(ActionEvent a)  { // 액션 시작 버튼
 		
-		
-//		String id1= "테스트1";
-//		String id2= "테스트2";
-//		String id3= "테스트3";
-//		loadList.add(new Load(id1,id2,id3,today));
+//		for(i=0; Main.wordList.size()<i; i++) {
 		
 		started = true;
 		Thread thread = new Thread() {
@@ -122,27 +126,108 @@ public class WordMainController {
 			public void run() {
 			try {
 				WatchService watchService = FileSystems.getDefault().newWatchService();
-                Path directory = Paths.get("C:\\test");
+                Path directory = Paths.get(now.getCellData(i));
+                Path outpath = Paths.get(next.getCellData(i));
                 directory.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
                         StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
                 
                 
-                while (true) {
+                System.out.println(Main.wordList.size()); // WordList 사이즈
+                System.out.println(now.getCellData(0)); // 테이블 데이터 보는 법
+                System.out.println(next.getCellData(0)); // 테이블 데이터 보는 법
+                
+                
+                
+                
+                SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss"); // 시간 데이터 ( 년 - 월 - 일 - 시간 - 분 - 초 )
+                
+                
+                while (started) {
                 	 WatchKey watchKey = watchService.take();
                      List<WatchEvent<?>> list = watchKey.pollEvents();
                      
                      for (WatchEvent<?> watchEvent : list) {
                          Kind<?> kind = watchEvent.kind();
                          Path path = (Path) watchEvent.context();
-                         if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                             Platform.runLater(() -> loadList.add(new Load("테스트","테스트","테스트",today)));
+                         
+                   
+                         Calendar cal = Calendar.getInstance();
+                 		today = formatter.format(cal.getTime());  // 현재시간 나타내는 표
+                 		
+                        if(path.toString().contains("~")) {
+                        }else if(path.toString().contains("$")){
+                       }else if(path.toString().contains(".BAK")) { //  contains = 관련된 문자가 있을 시 처리
+                     }else {
+                    	 if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                             Platform.runLater(() -> loadList.add(new Load(path.toString(),directory.toString(),"생성",today)));
+                             
+                             
+                             try {   // 파일 복사 try
+                            	 FileInputStream inFile = new FileInputStream(directory+"\\"+path);
+                            	 FileOutputStream outFile = new FileOutputStream(outpath+"\\"+path);
+                            	                             	 
+                            	 
+                            	 File filter = new File(outFile.toString()); // 복사 경로 이상 시 에러발생을 막기위한 조치
+                            	 if(!filter.exists()) {
+                            		 filter.mkdir();
+                            	 }else {
+                            		 File[] destory = filter.listFiles();
+                            		 for(File des : destory) {
+                            			 des.delete();
+                            		 }
+                            	 }
+                            	 int data = 0;
+                            	 while((data=inFile.read())!=-1) {
+                            	outFile.write(data);	 
+                            	 }
+                            	 inFile.close();
+                            	 outFile.close();
+                             }catch(IOException e) {
+                        		 e.printStackTrace();
+                        	 }
+
+
+                             
                          } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                             Platform.runLater(() -> loadList.add(new Load("테스트","테스트","테스트",today)));
+                             Platform.runLater(() -> loadList.add(new Load(path.toString(),directory.toString(),"삭제",today)));
+                             
+                            File delete = new File(outpath+"\\"+path.toString()); // 복사 경로 이상 시 에러발생을 막기위한 조치 
+                            
+                            delete.delete(); // 파일 삭제
+
                          } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                             Platform.runLater(() -> loadList.add(new Load("테스트","테스트","테스트",today)));
+                             Platform.runLater(() -> loadList.add(new Load(path.toString(),directory.toString(),"수정",today)));
+                            
+                             
+                             try { // 파일 복사 try
+                            	 FileInputStream inFile = new FileInputStream(directory+"\\"+path);
+                            	 FileOutputStream outFile = new FileOutputStream(outpath+"\\"+path);
+                            	 
+                            	 
+                            	 File filter = new File(outFile.toString());  // 복사 경로 이상 시 에러발생을 막기위한 조치
+                            	 if(!filter.exists()) {
+                            		 filter.mkdir();
+                            	 }else {
+                            		 File[] destory = filter.listFiles();
+                            		 for(File des : destory) {
+                            			 des.delete();
+                            		 }
+                            	 }
+                            	 
+                            	 int data = 0;
+                            	 while((data=inFile.read())!=-1) {
+                            	outFile.write(data);	 
+                            	 }
+                            	 inFile.close();
+                            	 outFile.close();
+                             }catch(IOException e) {
+                        		 e.printStackTrace();
+                        	 }
                          } else if (kind == StandardWatchEventKinds.OVERFLOW) {
-  
+                        	 
                          }
+                         
+                     }
                      }
                      try {
                     	 Thread.sleep(10);
@@ -163,13 +248,16 @@ public class WordMainController {
 		};
 		thread.setDaemon(true);
 		thread.start();
-		
-					}
+		}
+//		}
+					
 	
+
 	@FXML
-	private void stopAction() {
-		System.exit(1);
-	}
+	private void stopAction() { // 액션 정지버튼
+		started = false;	
+		}
+	
 	
 	
 }

@@ -15,12 +15,12 @@ import javafx.scene.layout.BorderPane;
 public class Main extends Application {
 	private Stage primaryStage;
 	private BorderPane rootLayout;
-	private ObservableList<Word> wordList = FXCollections.observableArrayList();
+	public static ObservableList<Word> wordList = FXCollections.observableArrayList();
 	
 
 	
 	public Main() {
-	
+	 
 	}
 	
 	public ObservableList<Word> getWordList() {
@@ -34,8 +34,7 @@ public class Main extends Application {
 		setRootLayout();
 		setWordMainView();
 		
-	}
-	
+	} 	
 	// 루트 레이아웃을 초기화 
 	public void setRootLayout() {
 		try {

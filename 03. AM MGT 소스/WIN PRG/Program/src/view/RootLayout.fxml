@@ -11,8 +11,8 @@
         <menus>
           <Menu mnemonicParsing="false" text="파일">
             <items>
-              <MenuItem mnemonicParsing="false" text="감시" />
-                  <MenuItem mnemonicParsing="false" text="정지" />
+              <MenuItem mnemonicParsing="false" text="로그 save" />
+                  <MenuItem mnemonicParsing="false" text="로그 load" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
