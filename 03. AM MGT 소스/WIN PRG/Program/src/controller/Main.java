@@ -1,9 +1,11 @@
 package controller;
 	
 import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -16,12 +18,14 @@ public class Main extends Application {
 	private Stage primaryStage;
 	private BorderPane rootLayout;
 	public static ObservableList<Word> wordList = FXCollections.observableArrayList();
-	
+	public static WordMainController controller;
+
 
 	
 	public Main() {
 	 
 	}
+	
 	
 	public ObservableList<Word> getWordList() {
 		return wordList;
@@ -30,7 +34,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("안되자나");
+		this.primaryStage.setTitle("AM Data Watch Program");
 		setRootLayout();
 		setWordMainView();
 		
@@ -46,6 +50,7 @@ public class Main extends Application {
 			Scene scene = new Scene(rootLayout);
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -56,7 +61,7 @@ public class Main extends Application {
 			loader.setLocation(Main.class.getResource("..\\view\\WordMainView.fxml"));
 			AnchorPane wordMainView = (AnchorPane) loader.load();
 			rootLayout.setCenter(wordMainView);
-			WordMainController controller = loader.getController();
+			controller = loader.getController();
 			primaryStage.setResizable(false); // 윈도우 창 고정	
 			controller.setMain(this);
 		}catch (Exception e) {
@@ -94,7 +99,10 @@ public class Main extends Application {
 	public Stage getPrimaryStage() {
 		return primaryStage;
 	}
-	
+	@FXML
+	private void about() {
+		System.exit(1);
+	}
 	
 	
 	public static void main(String[] args) throws Exception{

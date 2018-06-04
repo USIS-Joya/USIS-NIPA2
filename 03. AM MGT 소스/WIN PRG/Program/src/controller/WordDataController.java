@@ -41,9 +41,6 @@ private void initialize() {
 		  word.setNow(nowField.getText());
 		  word.setNext(nextField.getText());
 		  
-		  for(int i=0; i<=100; i++) {
-			  
-		  }
 		  returnValue=1;
 		  dialogStage.close();
 	  }
@@ -61,7 +58,7 @@ private void initialize() {
 		nowField.setText(selectedDcPath1);
 }
   @FXML
-	private void PathAction2() {
+	private void PathAction2() { // 폴더 경로 선택
 		DirectoryChooser dc2 = new DirectoryChooser();
 		File selectedDc2 = dc2.showDialog(dialogStage);
 		String selectedDcPath2 = selectedDc2.getPath();

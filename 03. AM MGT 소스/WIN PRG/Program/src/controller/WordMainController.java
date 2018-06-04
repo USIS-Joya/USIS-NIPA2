@@ -1,27 +1,12 @@
 package controller;
 
-
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.nio.file.WatchEvent.Kind;
-import java.text.SimpleDateFormat;
-
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.List;
 
-
-
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -50,12 +35,11 @@ public class WordMainController {
 	private TableColumn<Load, String> time;
 	private Main main;
 	private ObservableList<Load> loadList = FXCollections.observableArrayList();
-	
-	private int i;
-	private String today;
-	
+	public static String textData = "C:\\AMlog\\";
 
-	private boolean started;
+	
+	
+	private List<WatchServiceThread> threadList;
 	@FXML
 	private void initialize() {
 		now.setCellValueFactory(cellData -> cellData.getValue().getNowProperty());
@@ -68,25 +52,34 @@ public class WordMainController {
 	public void setMain(Main main) {
 		this.main = main;
 		wordTable.setItems(main.getWordList());
-		
-		
-		
 		loadTable.setItems(loadList);
 		
 	}
-	public WordMainController() {
-		
-		
-		
-	}
-	
-	
+	public WordMainController() {     }	
 	@FXML
 	private void addAction() {  // 추가 버튼 활성화
 		Word word = new Word("","");
 		int returnValue = main.setWordDataView(word);
 		if(returnValue ==1) {
 			main.getWordList().add(word);
+			File filter = new File(textData); 
+			if (!filter.exists()) {
+				filter.mkdir();
+			} else {
+				BufferedWriter fw;
+				try {
+					fw = new BufferedWriter(new FileWriter(textData+"파일경로.txt",true));
+					fw.append("현재경로 : "+word.getNow()+",  이동경로 : "+word.getNext()+"\r\n");
+					fw.flush();
+					fw.close();
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+				}
+				
+				
+				
+			}	
 		}
 	}
 	@FXML
@@ -115,149 +108,55 @@ public class WordMainController {
 	}
 	
 	@FXML
-	private void startAction(ActionEvent a)  { // 액션 시작 버튼
+	private void startAction(ActionEvent a) { // 액션 시작 버튼
+		WatchServiceThread wst;
 		
-//		for(i=0; Main.wordList.size()<i; i++) {
+		// thread 저장 ArrayList
+		threadList = new ArrayList<WatchServiceThread>();
 		
-		started = true;
-		Thread thread = new Thread() {
+		for (int iCount = 0; iCount < Main.wordList.size(); iCount++) {
+			// Thread 생성
+			wst = new WatchServiceThread(now.getCellData(iCount), next.getCellData(iCount));
+			// Thread 시작
+			wst.start();
 			
-			@Override
-			public void run() {
-			try {
-				WatchService watchService = FileSystems.getDefault().newWatchService();
-                Path directory = Paths.get(now.getCellData(i));
-                Path outpath = Paths.get(next.getCellData(i));
-                directory.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
-                
-                
-                System.out.println(Main.wordList.size()); // WordList 사이즈
-                System.out.println(now.getCellData(0)); // 테이블 데이터 보는 법
-                System.out.println(next.getCellData(0)); // 테이블 데이터 보는 법
-                
-                
-                
-                
-                SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss"); // 시간 데이터 ( 년 - 월 - 일 - 시간 - 분 - 초 )
-                
-                
-                while (started) {
-                	 WatchKey watchKey = watchService.take();
-                     List<WatchEvent<?>> list = watchKey.pollEvents();
-                     
-                     for (WatchEvent<?> watchEvent : list) {
-                         Kind<?> kind = watchEvent.kind();
-                         Path path = (Path) watchEvent.context();
-                         
-                   
-                         Calendar cal = Calendar.getInstance();
-                 		today = formatter.format(cal.getTime());  // 현재시간 나타내는 표
-                 		
-                        if(path.toString().contains("~")) {
-                        }else if(path.toString().contains("$")){
-                       }else if(path.toString().contains(".BAK")) { //  contains = 관련된 문자가 있을 시 처리
-                     }else {
-                    	 if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                             Platform.runLater(() -> loadList.add(new Load(path.toString(),directory.toString(),"생성",today)));
-                             
-                             
-                             try {   // 파일 복사 try
-                            	 FileInputStream inFile = new FileInputStream(directory+"\\"+path);
-                            	 FileOutputStream outFile = new FileOutputStream(outpath+"\\"+path);
-                            	                             	 
-                            	 
-                            	 File filter = new File(outFile.toString()); // 복사 경로 이상 시 에러발생을 막기위한 조치
-                            	 if(!filter.exists()) {
-                            		 filter.mkdir();
-                            	 }else {
-                            		 File[] destory = filter.listFiles();
-                            		 for(File des : destory) {
-                            			 des.delete();
-                            		 }
-                            	 }
-                            	 int data = 0;
-                            	 while((data=inFile.read())!=-1) {
-                            	outFile.write(data);	 
-                            	 }
-                            	 inFile.close();
-                            	 outFile.close();
-                             }catch(IOException e) {
-                        		 e.printStackTrace();
-                        	 }
-
-
-                             
-                         } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                             Platform.runLater(() -> loadList.add(new Load(path.toString(),directory.toString(),"삭제",today)));
-                             
-                            File delete = new File(outpath+"\\"+path.toString()); // 복사 경로 이상 시 에러발생을 막기위한 조치 
-                            
-                            delete.delete(); // 파일 삭제
-
-                         } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                             Platform.runLater(() -> loadList.add(new Load(path.toString(),directory.toString(),"수정",today)));
-                            
-                             
-                             try { // 파일 복사 try
-                            	 FileInputStream inFile = new FileInputStream(directory+"\\"+path);
-                            	 FileOutputStream outFile = new FileOutputStream(outpath+"\\"+path);
-                            	 
-                            	 
-                            	 File filter = new File(outFile.toString());  // 복사 경로 이상 시 에러발생을 막기위한 조치
-                            	 if(!filter.exists()) {
-                            		 filter.mkdir();
-                            	 }else {
-                            		 File[] destory = filter.listFiles();
-                            		 for(File des : destory) {
-                            			 des.delete();
-                            		 }
-                            	 }
-                            	 
-                            	 int data = 0;
-                            	 while((data=inFile.read())!=-1) {
-                            	outFile.write(data);	 
-                            	 }
-                            	 inFile.close();
-                            	 outFile.close();
-                             }catch(IOException e) {
-                        		 e.printStackTrace();
-                        	 }
-                         } else if (kind == StandardWatchEventKinds.OVERFLOW) {
-                        	 
-                         }
-                         
-                     }
-                     }
-                     try {
-                    	 Thread.sleep(10);
-                     }catch(Exception b) {
-                    	 b.printStackTrace();
-                     }
-  
-                     boolean valid = watchKey.reset();
-  
-                     if (!valid) {
-                         break;
-                     }
-                }
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
-			}
-		};
-		thread.setDaemon(true);
-		thread.start();
+			// Thread 실행 후 ArrayList에 저장.
+			threadList.add(wst);
 		}
-//		}
-					
+	}
 	
-
 	@FXML
 	private void stopAction() { // 액션 정지버튼
-		started = false;	
+		WatchServiceThread wst;
+		
+		// Stop 명령을 실행할 때 실행중인 Thread 모두 종료.
+		for (int iCount = 0; iCount < threadList.size(); iCount++) {
+			// Thread 생성
+			wst = (WatchServiceThread)threadList.get(iCount);
+			// Watch Service 닫기
+			wst.watchServiceClose();
+			// Thread 종료			
+			wst.interrupt();
+		}	
+		System.out.println("stopAction()... 실행중인 쓰레드 모두 종료.");
+	}
+	// private 변수인 loadList에 String을 추가하는 함수.
+	// WatchServerThread 클래스에서 참조해서 사용
+	public void addRowInloadList(String fileName, String dirPath, String action, String date,String logtime){	
+		loadList.add(new Load(fileName, dirPath, action, date));
+		
+		
+		try { // 로그 저장
+			
+				
+				BufferedWriter fw = new BufferedWriter(new FileWriter(textData+logtime+".txt",true));
+				fw.append(fileName+", "+dirPath+", "+action+", "+date+"\r\n");
+				fw.flush();
+				fw.close();
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 		}
-	
-	
-	
 }
