@@ -9,14 +9,10 @@
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
-          <Menu mnemonicParsing="false" text="파일">
+            <Menu mnemonicParsing="false" text="파일">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#about" text="종료" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
+                  <MenuItem mnemonicParsing="false" onAction="#Exit" text="종료" />
+                  <MenuItem mnemonicParsing="false" onAction="#Reset" text="초기화" />
             </items>
           </Menu>
         </menus>
