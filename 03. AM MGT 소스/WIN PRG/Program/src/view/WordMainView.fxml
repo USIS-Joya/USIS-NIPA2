@@ -43,7 +43,7 @@
                               <Blend mode="DIFFERENCE" opacity="0.07" />
                            </effect>
                         </TableView>
-                        <Button layoutX="450.0" layoutY="343.0" mnemonicParsing="false" onAction="#startAction"  text="감시" />
+                        <Button layoutX="450.0" layoutY="343.0" mnemonicParsing="false" onAction="#startAction" text="감시" />
                         <Button layoutX="518.0" layoutY="343.0" mnemonicParsing="false" onAction="#stopAction" text="중지" />
                      </children>
                   </AnchorPane>

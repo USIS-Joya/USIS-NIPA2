@@ -1,8 +1,6 @@
 package controller;
 
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -50,7 +48,7 @@ public class WatchServiceThread extends Thread {
 		inputFolder = inputPath;
 		outputFolder = outputPath;
 	}
-	
+
 	@Override
 	public void run() {
 		started = true;
@@ -87,38 +85,30 @@ public class WatchServiceThread extends Thread {
 					} else {
 						if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
 							Platform.runLater(() -> Main.controller.addRowInloadList(path.toString(),
-							directory.toString(), "생성", today,day));							
-							System.out.println("생성 작업..." + cal.getTimeInMillis());
+									directory.toString(), "생성", today,day));
 							
+							
+							System.out.println("생성 작업..." + cal.getTimeInMillis());
+
 							try { // 파일 복사 try
-								
-								File filter = new File(outpath.toString()); // 복사 경로 이상 시 에러발생을 막기위한 조치
-								File filtering = new File(outpath + "\\" + path);
-								File check = new File(directory + "\\" + path);
-								
-								if (!filter.exists()) { // 폴더가 없을시 생성
-									filter.mkdirs();
-								
-								} else if(check.isDirectory()){ // check 가 만약 디렉토리(폴더)라면 생성
-									if(!filtering.exists()) {
-										filtering.mkdirs();
+								FileInputStream inFile = new FileInputStream(directory + "\\" + path);
+								FileOutputStream outFile = new FileOutputStream(outpath + "\\" + path);
+
+								File filter = new File(outFile.toString()); // 복사 경로 이상 시 에러발생을 막기위한 조치
+								if (!filter.exists()) {
+									filter.mkdir();
+								} else {
+									File[] destory = filter.listFiles();
+									for (File des : destory) {
+										des.delete();
 									}
-									}else { //  파일 복사
-										FileInputStream inFile = new FileInputStream(directory + "\\" + path);
-										FileOutputStream outFile = new FileOutputStream(outpath + "\\" + path);
-										
-										BufferedInputStream in = new BufferedInputStream(inFile);
-										BufferedOutputStream out = new BufferedOutputStream(outFile);
-										int data = 0;
-										byte[] loading = new byte[1024]; 
-										while ((data = in.read(loading, 0,1024)) != -1) {
-											out.write(loading,0,data);
 								}
-										inFile.close();
-										outFile.close();
-										inFile.close();
-										outFile.close();
-							}
+								int data = 0;
+								while ((data = inFile.read()) != -1) {
+									outFile.write(data);
+								}
+								inFile.close();
+								outFile.close();
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
@@ -128,9 +118,13 @@ public class WatchServiceThread extends Thread {
 
 						} else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
 							Platform.runLater(() -> Main.controller.addRowInloadList(path.toString(),
-							directory.toString(), "삭제", today,day));							
+									directory.toString(), "삭제", today,day));
+							
+							
 							File delete = new File(outpath + "\\" + path.toString()); // 복사 경로 이상 시 에러발생을 막기위한 조치
+
 							delete.delete(); // 파일 삭제
+
 						} else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
 							/*
 							 * ENTRY_MODIFY이벤트가 ENTRY_CREATE이벤트 이후에 발생하거나 ENTRY_MODIFY이벤트 로그가 여러번 화면에 추가되는걸
@@ -148,35 +142,25 @@ public class WatchServiceThread extends Thread {
 							System.out.println("수정 작업..." + cal.getTimeInMillis());
 
 							try { // 파일 복사 try
-							
-								
-								File filter = new File(outpath.toString()); // 복사 경로 이상 시 에러발생을 막기위한 조치
-								File filtering = new File(outpath + "\\" + path);
-								File check = new File(directory + "\\" + path);
-								
-								if (!filter.exists()) { // 폴더가 없을시 생성
-									filter.mkdirs();
-								
-								}else if(check.isDirectory()){ // check가 디렉토리(폴더)라면 생성
-									if(!filtering.exists()) {
-										filtering.mkdirs();
-										}
-									}else { // 복사 기능
-										FileInputStream inFile = new FileInputStream(directory + "\\" + path);
-										FileOutputStream outFile = new FileOutputStream(outpath + "\\" + path);
-										
-										BufferedInputStream in = new BufferedInputStream(inFile);
-										BufferedOutputStream out = new BufferedOutputStream(outFile);
-										int data = 0;
-										byte[] loading = new byte[1024]; 
-										while ((data = in.read(loading, 0,1024)) != -1) {
-											out.write(loading,0,data);
-								}
-										inFile.close();
-										outFile.close();
-										inFile.close();
-										outFile.close();
+								FileInputStream inFile = new FileInputStream(directory + "\\" + path);
+								FileOutputStream outFile = new FileOutputStream(outpath + "\\" + path);
+
+								File filter = new File(outFile.toString()); // 복사 경로 이상 시 에러발생을 막기위한 조치
+								if (!filter.exists()) {
+									filter.mkdir();
+								} else {
+									File[] destory = filter.listFiles();
+									for (File des : destory) {
+										des.delete();
 									}
+								}
+
+								int data = 0;
+								while ((data = inFile.read()) != -1) {
+									outFile.write(data);
+								}
+								inFile.close();
+								outFile.close();
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
