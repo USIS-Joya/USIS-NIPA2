@@ -1,11 +1,13 @@
 package controller;
 	
+
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
+
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -19,12 +21,16 @@ public class Main extends Application {
 	private BorderPane rootLayout;
 	public static ObservableList<Word> wordList = FXCollections.observableArrayList();
 	public static WordMainController controller;
-
-
+	public Preferences settings;
+	public final String node_Name= "Settings";
+	public final String stringPathName = "PATH_ALL";
+	public String value_Path_all = null;
+	public static String[] splitPath;
 	
 	public Main() {
-	 
+		
 	}
+
 	
 	
 	public ObservableList<Word> getWordList() {
@@ -37,7 +43,7 @@ public class Main extends Application {
 		this.primaryStage.setTitle("AM Data Watch Program");
 		setRootLayout();
 		setWordMainView();
-		
+		GetApplicationSettings(node_Name);		
 	} 	
 	// 루트 레이아웃을 초기화 
 	public void setRootLayout() {
@@ -50,7 +56,6 @@ public class Main extends Application {
 			Scene scene = new Scene(rootLayout);
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -83,27 +88,39 @@ public class Main extends Application {
 			
 			WordDataController controller = loader.getController();
 			controller.setDialogStage(dialogStage);
+			controller.SetMainApplication(this);
 			controller.setWord(word);
-						
-
 			dialogStage.showAndWait();
+			
 			return controller.getReturnValue();
 		}catch(IOException e) {
 			e.printStackTrace();
 			return 0;
 		}
 	}
-	
-	
 	//현재의 메인 스테이지를 반환
 	public Stage getPrimaryStage() {
 		return primaryStage;
 	}
-	@FXML
-	private void about() {
-		System.exit(1);
+	public ObservableList<Word> wordList() {
+		return wordList;
 	}
-	
+	public void GetApplicationSettings(String nodeName) {
+		Preferences prefsRoot = Preferences.userRoot();
+		settings = prefsRoot.node(nodeName);
+		value_Path_all = settings.get(stringPathName,"");
+		/**
+    	 * value_Path_all문자를 '|'로 split해서 tableData에 담는다.
+    	 * 짝수값(0,2,4...):  (원본 경로)
+    	 * 홀수값(1,3,5...):  (복사본 경로)
+    	 **/
+		 splitPath = value_Path_all.split("\\|");
+		if(splitPath.length >1) {
+			for(int i =0; i< splitPath.length; i+=2) {
+				wordList.add(new Word(splitPath[i], splitPath[i+1]));
+			}
+		}
+	}
 	
 	public static void main(String[] args) throws Exception{
 		launch(args);

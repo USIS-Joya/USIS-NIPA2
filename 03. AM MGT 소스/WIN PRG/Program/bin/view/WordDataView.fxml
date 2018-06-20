@@ -14,7 +14,6 @@
       <Button layoutX="335.0" layoutY="106.0" mnemonicParsing="false" onAction="#confirmAction" text="확인" />
       <Button layoutX="396.0" layoutY="106.0" mnemonicParsing="false" onAction="#cancelAction" text="취소" />
       <Button layoutX="396.0" layoutY="24.0" mnemonicParsing="false" onAction="#PathAction1" text="..." />
-      <Button layoutX="396.0" layoutY="69.0" mnemonicParsing="false" onAction="#PathAction2" text="..." />
-      
+      <Button layoutX="396.0" layoutY="69.0" mnemonicParsing="false" onAction="#PathAction2" text="..." />      
    </children>
 </AnchorPane>
