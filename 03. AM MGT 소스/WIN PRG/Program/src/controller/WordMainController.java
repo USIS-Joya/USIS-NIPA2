@@ -53,8 +53,11 @@ import javafx.scene.control.Alert.AlertType;
 		wordTable.setItems(main.getWordList());
 		loadTable.setItems(loadList);
 	}
+	public void test() {
+        this.main.settings.put(this.main.stringPathName, "");
+	}
 	
-	public WordMainController() {     }	
+	public WordMainController() {}	
 	@FXML
 	private void addAction() {  // 추가 버튼 활성화
 		Word word = new Word("","");
@@ -88,31 +91,8 @@ import javafx.scene.control.Alert.AlertType;
 	@FXML
 	private void deleteAction() { //삭제 버튼 활성화
 		int selectedIndex = wordTable.getSelectionModel().getSelectedIndex();
-		if (selectedIndex >=0) {
-			
-			// 1. value_Path_all문자에서 selectedIndex에 해당하는 문자를 찾는다. 
-			// 2. this.main.value_Path_all.indexOf("")로 찾는다.
-			// 3. this.main.value_Path_all.replace("C:\\test|C:\\test2", "");
-			String path1 = now.getCellData(selectedIndex)+"|"+next.getCellData(selectedIndex);
-			
-			if(this.main.value_Path_all.indexOf(selectedIndex) == 0)
-			{
-				this.main.value_Path_all.replace(now.getCellData(selectedIndex)+"[|]"+next.getCellData(selectedIndex), "");
-				
-				if(this.main.value_Path_all.length() > 0) {
-					// 맨앞에 있는 "|"빼고 다음부터 저장.
-					this.main.value_Path_all = this.main.value_Path_all.substring(1);
-				}
-			} else {
-				// 중간에 포함된 경로이기 때문에 앞에 "|"를 붙이고 같이 삭제.
-				this.main.value_Path_all.replace(now.getCellData(selectedIndex)+"[|]"+next.getCellData(selectedIndex)," ");
-			}
-//			this.main.settings.put(this.main.value_Path_all,"");
-			System.out.println(path1);
-			System.out.println("메인 :"+main.value_Path_all);
-			System.out.println("셀렉"+selectedIndex);
-
-			wordTable.getItems().remove(selectedIndex);
+		if (selectedIndex >=0) {			
+			wordTable.getItems().remove(selectedIndex);		
 		}else {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.initOwner(main.getPrimaryStage());
@@ -125,7 +105,6 @@ import javafx.scene.control.Alert.AlertType;
 	public ObservableList<Load> getLoadList() {
 		return loadList;
 	}
-	
 	@FXML
 	private void startAction() { // 액션 시작 버튼
 		if(main.wordList().size()==0) {
@@ -153,7 +132,6 @@ import javafx.scene.control.Alert.AlertType;
 			wst = new WatchServiceThread(now.getCellData(iCount), next.getCellData(iCount));
 			// Thread 시작
 			wst.start();
-			
 			// Thread 실행 후 ArrayList에 저장.
 			threadList.add(wst);
 		}
@@ -173,7 +151,11 @@ import javafx.scene.control.Alert.AlertType;
 			// Thread 종료			
 			wst.interrupt();
 		}	
-		System.out.println("stopAction()... 실행중인 쓰레드 모두 종료.");
+//		System.out.println("stopAction()... 실행중인 쓰레드 모두 종료.");
+	}
+	@FXML
+	private void Reset() {
+		this.main.settings.put(this.main.stringPathName, "");
 	}
 	// private 변수인 loadList에 String을 추가하는 함수.
 	// WatchServerThread 클래스에서 참조해서 사용

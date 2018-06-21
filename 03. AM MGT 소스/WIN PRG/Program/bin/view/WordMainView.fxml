@@ -27,7 +27,7 @@
                   </TableView>
                </content>
             </Tab>
-            <Tab text="경로지정">
+            <Tab text="환경설정">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -43,8 +43,9 @@
                               <Blend mode="DIFFERENCE" opacity="0.07" />
                            </effect>
                         </TableView>
-                        <Button layoutX="450.0" layoutY="343.0" mnemonicParsing="false" onAction="#startAction"  text="감시" />
+                        <Button layoutX="450.0" layoutY="343.0" mnemonicParsing="false" onAction="#startAction" text="감시" />
                         <Button layoutX="518.0" layoutY="343.0" mnemonicParsing="false" onAction="#stopAction" text="중지" />
+                        <Button layoutX="24.0" layoutY="343.0" mnemonicParsing="false" onAction="#Reset" text="초기화" />
                      </children>
                   </AnchorPane>
                </content>

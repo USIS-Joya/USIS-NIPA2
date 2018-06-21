@@ -63,8 +63,8 @@ public class WatchServiceThread extends Thread {
 					StandardWatchEventKinds.ENTRY_MODIFY);
 
 			/* For Debug Output Statement */
-			System.out.println("Input Folder: " + inputFolder);
-			System.out.println("Output Folder: " + outputFolder);
+//			System.out.println("Input Folder: " + inputFolder);
+//			System.out.println("Output Folder: " + outputFolder);
 
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); // 시간 데이터 ( 년 - 월 - 일 - 시간
 																						// - 분 - 초 )
@@ -88,7 +88,7 @@ public class WatchServiceThread extends Thread {
 						if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
 							Platform.runLater(() -> Main.controller.addRowInloadList(path.toString(),
 							directory.toString(), "생성", today,day));							
-							System.out.println("생성 작업..." + cal.getTimeInMillis());
+//							System.out.println("생성 작업..." + cal.getTimeInMillis());
 							
 							try { // 파일 복사 try
 								
@@ -145,7 +145,7 @@ public class WatchServiceThread extends Thread {
 								Platform.runLater(() -> Main.controller.addRowInloadList(path.toString(),
 										directory.toString(), "수정", today,day));
 							}
-							System.out.println("수정 작업..." + cal.getTimeInMillis());
+//							System.out.println("수정 작업..." + cal.getTimeInMillis());
 
 							try { // 파일 복사 try
 							
@@ -199,7 +199,7 @@ public class WatchServiceThread extends Thread {
 			watchService.close();
 
 			// Thread 종료 시 출력문 출력.
-			System.out.println(inputFolder + "의 WatchService가 종료되었습니다.");
+//			System.out.println(inputFolder + "의 WatchService가 종료되었습니다.");
 
 		} catch (Exception e) {
 			e.printStackTrace();

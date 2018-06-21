@@ -48,8 +48,8 @@ private void initialize() {
 		   * 1. Preferences에 저장되어 있는 Path정보를 가져온다. 
 		   **********************************************************************/
 		  String all_path = this.main.settings.get(this.main.stringPathName, "");
-		  System.out.println("Get Settings - All Path: " + all_path);
-		  System.out.println(this.main.stringPathName);
+//		  System.out.println("Get Settings - All Path: " + all_path);
+//		  System.out.println(this.main.stringPathName);
 	     /**********************************************************************
 	      * 2. all_path에 현재 지정된 Orgin, Dest 경로를 추가해 준다. 
 	      **********************************************************************/
@@ -64,11 +64,11 @@ private void initialize() {
 	       * 3. 추가된 all_path를 Settings에 다시 저장한다. 
 	       **********************************************************************/
 		  this.main.settings.put(this.main.stringPathName,all_path);
-		  System.out.println("Set Settings - All Path: " + all_path);
+//		  System.out.println("Set Settings - All Path: " + all_path);
 		  returnValue=1;
 		  dialogStage.close();
-	  }
-  }
+	}
+ }
   @FXML
   private void cancelAction() { //다이얼로그 창을 닫는다.
 	  dialogStage.close();
@@ -81,12 +81,12 @@ private void initialize() {
 		nowField.setText(selectedDcPath1);
 }
   @FXML
-	private void PathAction2() { // 폴더 경로 선택
+  private void PathAction2() { // 폴더 경로 선택
 		DirectoryChooser dc2 = new DirectoryChooser();
 		File selectedDc2 = dc2.showDialog(dialogStage);
 		String selectedDcPath2 = selectedDc2.getPath();
 		nextField.setText(selectedDcPath2);
-	}
+}
   
   private boolean valid() {  // 모든 입력값들을 확인한 뒤 비어 있으면 오류 메시지 발생
 	  String errorMessage = "";

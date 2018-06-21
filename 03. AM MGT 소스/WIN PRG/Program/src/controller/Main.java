@@ -7,7 +7,7 @@ import java.util.prefs.Preferences;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
+
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -67,7 +67,6 @@ public class Main extends Application {
 			AnchorPane wordMainView = (AnchorPane) loader.load();
 			rootLayout.setCenter(wordMainView);
 			controller = loader.getController();
-			
 			primaryStage.setResizable(false); // 윈도우 창 고정	
 			controller.setMain(this);
 		}catch (Exception e) {
@@ -121,14 +120,6 @@ public class Main extends Application {
 				wordList.add(new Word(splitPath[i], splitPath[i+1]));
 			}
 		}
-	}
-	@FXML
-	private void Exit() {
-		System.exit(1);
-	}
-	@FXML
-	private void Reset() {
-		 this.settings.put(this.stringPathName, "");
 	}
 	
 	public static void main(String[] args) throws Exception{
