@@ -75,7 +75,12 @@ public class Main extends Application {
 	//
 
 	public static void main(String[] args) {
-		launch(args);
+		try {
+			launch(args);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
@@ -251,7 +256,7 @@ public class Main extends Application {
 		}
 	}
 
-	//DB 연결
+	// DB 연결
 	@FXML
 	private void displayValue(ActionEvent event) {
 		try {
@@ -283,7 +288,8 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
-	//경로 추가
+
+	// 경로 추가
 	@FXML
 	private void pathAction() {
 		path path = new path("");
@@ -295,7 +301,7 @@ public class Main extends Application {
 		}
 	}
 
-	//경로 수정
+	// 경로 수정
 	@FXML
 	private void modifyAction() {
 		path path = pathTable.getSelectionModel().getSelectedItem();
@@ -311,7 +317,7 @@ public class Main extends Application {
 		}
 	}
 
-	//경로 삭제
+	// 경로 삭제
 	@FXML
 	private void deleteAction() {
 		int selectedIndex = pathTable.getSelectionModel().getSelectedIndex();
