@@ -47,7 +47,7 @@ public class Main extends Application {
 	} 	
 	// 루트 레이아웃을 초기화 
 	public void setRootLayout() {
-		try {
+		try {  
 			//FXML 파일을 이요해 루트 레이아웃을 가져온다.
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(Main.class.getResource("..\\view\\RootLayout.fxml"));
@@ -118,7 +118,7 @@ public class Main extends Application {
 		if(splitPath.length >1) {
 			for(int i =0; i< splitPath.length; i+=2) {
 				wordList.add(new Word(splitPath[i], splitPath[i+1]));
-			}
+			} 
 		}
 	}
 	

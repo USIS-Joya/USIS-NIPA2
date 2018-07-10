@@ -2,6 +2,7 @@ package controller;
 
 
 import java.io.BufferedInputStream;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,6 +19,9 @@ import java.nio.file.WatchEvent.Kind;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+
+
+
 
 import javafx.application.Platform;
 
@@ -76,7 +80,6 @@ public class WatchServiceThread extends Thread {
 				for (WatchEvent<?> watchEvent : list) {
 					Kind<?> kind = watchEvent.kind();
 					Path path = (Path) watchEvent.context();
-
 					Calendar cal = Calendar.getInstance();
 					today = formatter.format(cal.getTime()); // 현재시간 나타내는 표
 					day = formatter2.format(cal.getTime()); // 로그 저장날짜 기록하기 위한 값
