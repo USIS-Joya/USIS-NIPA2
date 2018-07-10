@@ -1,43 +1,26 @@
 package controller;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.prefs.Preferences;
 
 import javafx.application.Application;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.ProgressBarTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import model.CellTask;
+
 import model.Connection;
 import model.management;
 import model.mongoThread;
@@ -47,74 +30,73 @@ import model.performance;
 public class Main extends Application {
 	public static Main main;
 	private Stage primaryStage;
-	private CellTask cellTask;
-	private boolean isStart = false;
+
+	// *****************환경설정*********************
 	public Preferences settings;
-	private String today = "";
-	private String preEventDate = "";
-	// **************************************
 	public final String node_Name = "Settings";
 	public double value_window_size_X = 0.0;
 	public double value_window_size_Y = 0.0;
 	public final String window_size_X = "WINDOW_SIZE_X";
 	public final String window_size_Y = "WINDOW_SIZE_Y";
-	// **************************************
+	// *******************************************
 
 	// 수행작업 Tab- Performance Table - 180515 CWJ
-	private ObservableList<performance> performList = FXCollections.observableArrayList();
-	private performance perform = new performance();
-
 	@FXML
 	private TableView<performance> performTable = new TableView<performance>();
-	//
-	ProgressBar bar = new ProgressBar();
+	public ObservableList<performance> performList = FXCollections.observableArrayList();
+	private performance perform = new performance();
+
 	private List<mongoThread> threadList;
 
-	// 화면관리 Tab
-	private ObservableList<management> manageList = FXCollections.observableArrayList();
-	private management manage = new management();
+	// 화면관리 Tab- Management Table - 180515 CWJ
 	@FXML
 	private TableView<management> manageTable = new TableView<management>();
-	@FXML
-	private TableColumn<management, String> m_FileName;
-	@FXML
-	private TableColumn<management, String> m_FilePath;
-	@FXML
-	private TableColumn<management, String> m_Start;
-	@FXML
-	private TableColumn<management, String> m_End;
+	public ObservableList<management> manageList = FXCollections.observableArrayList();
+	private management manage = new management();
+
 	//
-	// 환경설정 Tab
-	private path path;
-	@FXML
-	private TableColumn<path, String> folderName;
+	// 환경설정 Tab- Path Table - 180515 CWJ
 	@FXML
 	private TableView<path> pathTable;
+	@FXML
+	private TableColumn<path, String> folderName;
 	public ObservableList<path> pathList = FXCollections.observableArrayList();
+	private path path;
+
+	// DB Connection Text Field
 	@FXML
 	private TextField txt_ip;
 	@FXML
 	private TextField txt_port;
+	@FXML
+	private TextField txt_usr;
+	@FXML
+	private TextField txt_pwd;
+	//
 
 	public static void main(String[] args) {
-		try {
-			Main main = new Main();
-			main.startThread();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		launch(args);
 	}
 
-	public Main() {
+	@Override
+	public void start(Stage primaryStage) {
+
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("Test");
+
+		Preferences prefsRoot = Preferences.userRoot();
+		settings = prefsRoot.node("Setting");
+		value_window_size_X = settings.getDouble(window_size_X, 600.0);
+		value_window_size_Y = settings.getDouble(window_size_Y, 400.0);
+		setMainView();
 	}
 
+	@SuppressWarnings("unchecked")
 	@FXML
 	private void initialize() {
 		TableColumn<performance, String> name = new TableColumn<>("파일명");
 		name.setCellValueFactory(cellData -> cellData.getValue().getFileNameProperty());
-		name.setPrefWidth(250);
+		name.setPrefWidth(300);
 
 		TableColumn<performance, String> path = new TableColumn<>("파일경로");
 		path.setCellValueFactory(cellData -> cellData.getValue().getFilePathProperty());
@@ -124,78 +106,34 @@ public class Main extends Application {
 		start.setCellValueFactory(cellData -> cellData.getValue().getStartProperty());
 		start.setPrefWidth(150);
 
-		performTable.getColumns().addAll(name, path, start, addCell());
+		TableColumn<performance, String> progress = new TableColumn<>("진행률");
+		progress.setCellValueFactory(cellData -> cellData.getValue().getprogressProperty());
+		progress.setPrefWidth(100);
 
-		m_FileName.setCellValueFactory(cellData -> cellData.getValue().getFileNameProperty());
-		m_FilePath.setCellValueFactory(cellData -> cellData.getValue().getFilePathProperty());
-		m_Start.setCellValueFactory(cellData -> cellData.getValue().getStartProperty());
+		performTable.getSortOrder();
+		performTable.getColumns().addAll(name, path, start, progress);
+
+		TableColumn<management, String> m_name = new TableColumn<>("파일명");
+		m_name.setCellValueFactory(cellData -> cellData.getValue().getFileNameProperty());
+		m_name.setPrefWidth(250);
+
+		TableColumn<management, String> m_path = new TableColumn<>("파일경로");
+		m_path.setCellValueFactory(cellData -> cellData.getValue().getFilePathProperty());
+		m_path.setPrefWidth(120);
+
+		TableColumn<management, String> m_start = new TableColumn<>("시작");
+		m_start.setCellValueFactory(cellData -> cellData.getValue().getStartProperty());
+		m_start.setPrefWidth(150);
+
+		TableColumn<management, String> m_End = new TableColumn<>("종료");
 		m_End.setCellValueFactory(cellData -> cellData.getValue().getEndProperty());
+		m_End.setPrefWidth(150);
+
+		performTable.getSortOrder();
+		manageTable.getColumns().addAll(m_name, m_path, m_start, m_End);
 
 		folderName.setCellValueFactory(cellData -> cellData.getValue().getPathProperty());
 
-	}
-
-	public ObservableList<path> getPathList() {
-		return pathList;
-	}
-
-	public ObservableList<management> getManageList() {
-		return manageList;
-	}
-
-	public TableColumn<performance, ProgressBar> addCell() {
-		TableColumn<performance, ProgressBar> progress = new TableColumn<>("진행률");
-		progress.setCellValueFactory(
-				new Callback<CellDataFeatures<performance, ProgressBar>, ObservableValue<ProgressBar>>() {
-					@Override
-					public ObservableValue<ProgressBar> call(CellDataFeatures<performance, ProgressBar> arg0) {
-						// performance task = arg0.getValue();
-						cellTask = new CellTask();
-						bar.progressProperty().bind(cellTask.progressProperty());
-						bar.setPrefWidth(155);
-						// bar.progressProperty().bind(task.progressProperty()); //2
-						return new SimpleObjectProperty<ProgressBar>(bar);
-					}
-				});
-		new Thread(cellTask).start();
-
-		progress.setPrefWidth(630);
-		return progress;
-	}
-
-	// thread
-	public void startThread() {
-		try {
-			mongoThread mTh;
-			threadList = new ArrayList<mongoThread>();
-
-			for (int count = 0; count < pathList.size(); count++) {
-				File clsFolder = new File(folderName.getCellData(count));
-				File[] arrFile = clsFolder.listFiles();
-
-				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-				// 시간 데이터 (2018 - 01 - 01 - 11 - 11 - 11)
-				Calendar cal = Calendar.getInstance();
-
-				mTh = new mongoThread(folderName.getCellData(count));
-
-				for (int i = 0; i < arrFile.length; i++) {
-					today = formatter.format(cal.getTime());
-
-					performList.add(new performance(arrFile[i].getName(), clsFolder.getPath(), today));
-					preEventDate = today;
-					manageList.add(new management(arrFile[i].getName(), clsFolder.getPath(), preEventDate, ""));
-
-				}
-				addCell();
-
-				mTh.start();
-				isStart = true;
-				threadList.add(mTh);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	// 현재의 메인 스테이지를 반환합니다.
@@ -204,28 +142,14 @@ public class Main extends Application {
 	}
 
 	public void setMain(Main main) {
-		this.main = main;
+		Main.main = main;
 		getPathList().add(path);
 		pathTable.setItems(main.getPathList());
-		manageTable.setItems(manageList);
+		getPerformList().add(perform);
+		performTable.setItems(main.getPerformList());
+		getManageList().add(manage);
+		manageTable.setItems(main.getManageList());
 
-	}
-
-	public void addRowInManageList(String fileName, String dirPath, String action, String date) {
-		manageList.add(new management(fileName, dirPath, action, date));
-	}
-
-	@Override
-	public void start(Stage primaryStage) {
-		// TODO Auto-generated method stub
-		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("Test");
-
-		Preferences prefsRoot = Preferences.userRoot();
-		settings = prefsRoot.node("Setting");
-		value_window_size_X = settings.getDouble(window_size_X, 600.0);
-		value_window_size_Y = settings.getDouble(window_size_Y, 400.0);
-		setMainView();
 	}
 
 	public int setpathDataView(path path, performance perform) {
@@ -269,8 +193,6 @@ public class Main extends Application {
 			primaryStage.show();
 
 			ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> {
-				// System.out.println("Height: " + primaryStage.getHeight() + " Width: " +
-				// primaryStage.getWidth());
 				settings.putDouble(window_size_X, primaryStage.getWidth());
 				settings.putDouble(window_size_Y, primaryStage.getHeight());
 			};
@@ -289,41 +211,91 @@ public class Main extends Application {
 		this.primaryStage.setHeight(y);
 	}
 
+	public ObservableList<performance> getPerformList() {
+		return performList;
+	}
+
+	public ObservableList<management> getManageList() {
+		return manageList;
+	}
+
+	public ObservableList<path> getPathList() {
+		return pathList;
+	}
+
+	public void addRowInManageList(String filePath, String folderPath, String start, String end) {
+		manageList.add(new management(filePath, folderPath, start, end));
+	}
+
+	public void addRowInPerformList(String filePath, String folderPath, String start, String pro) {
+		performList.add(new performance(filePath, folderPath, start, pro));
+	}
+
+	// START thread
+	public void startThread() {
+		try {
+			mongoThread mTh;
+			threadList = new ArrayList<mongoThread>();
+
+			for (int count = 0; count < main.getPathList().size(); count++) {
+				if (count == main.getPathList().size() - 1) {
+					mTh = new mongoThread(folderName.getCellData(count));
+					mTh.start();
+
+					// isStart = true;
+					threadList.add(mTh);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	//DB 연결
 	@FXML
 	private void displayValue(ActionEvent event) {
 		try {
 			Connection conn = new Connection();
 
 			conn.setIP(txt_ip.getText());
+			String IP = txt_ip.getText();
 			String str_port = txt_port.getText();
 			int Port = Integer.parseInt(str_port);
+			conn.setIP(IP);
 			conn.setPort(Port);
+			if (Port == 27017) {
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.initOwner(main.getPrimaryStage());
+				alert.setTitle("Connection!");
+				alert.setHeaderText("MongoDB가 연결되었습니다.");
+				alert.setContentText("IP: " + conn.getIP() + " Port: " + conn.getPort());
+				alert.showAndWait();
+			} else {
+				Alert alert1 = new Alert(AlertType.WARNING);
+				alert1.initOwner(main.getPrimaryStage());
+				alert1.setTitle("오류 메세지");
+				alert1.setHeaderText("DB가 연결되지 않았습니다.");
+				alert1.setContentText("IP와 Port를 재입력하세요.");
+				alert1.showAndWait();
+			}
 
-			//
-			System.out.println("MongoDB IP : " + conn.getIP().toString());
-			System.out.println("MongoDB PORT : " + conn.getPort());
-			//
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
+	//경로 추가
 	@FXML
 	private void pathAction() {
 		path path = new path("");
-		performance perform = new performance("", "", "");
+		performance perform = new performance("", "", "", "");
 		int returnValue = main.setpathDataView(path, perform);
 		if (returnValue == 1) {
 			main.getPathList().add(path);
 			startThread();
-			performTable.setItems(performList);
-
-			manageTable.setItems(manageList);
-
 		}
 	}
 
-	// 수정
+	//경로 수정
 	@FXML
 	private void modifyAction() {
 		path path = pathTable.getSelectionModel().getSelectedItem();
@@ -339,7 +311,7 @@ public class Main extends Application {
 		}
 	}
 
-	// 삭제
+	//경로 삭제
 	@FXML
 	private void deleteAction() {
 		int selectedIndex = pathTable.getSelectionModel().getSelectedIndex();
@@ -358,17 +330,17 @@ public class Main extends Application {
 	// 강제종료
 	@FXML
 	private void exitAction() {
+		mongoThread mTh;
 		try {
-			mongoThread mTh;
-			if (isStart == true) {
-				for (int i = 0; i < threadList.size(); i++) {
-					mTh = (mongoThread) threadList.get(i);
-					mTh.mongoClose();
-					mTh.interrupt();
-				}
+			for (int i = 0; i < threadList.size(); i++) {
+				mTh = (mongoThread) threadList.get(i);
+				mTh.mongoClose();
+
+				Thread.sleep(1000);
+				mTh.interrupt();
 				System.out.println("Thread 종료");
 			}
-			isStart = false;
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

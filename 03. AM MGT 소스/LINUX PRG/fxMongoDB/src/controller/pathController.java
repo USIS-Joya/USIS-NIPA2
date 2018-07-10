@@ -1,9 +1,5 @@
 package controller;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -19,6 +15,7 @@ public class pathController {
 	private Stage dialogStage;
 
 	private path path;
+	@SuppressWarnings("unused")
 	private performance perform;
 
 	@FXML
@@ -69,9 +66,16 @@ public class pathController {
 		if (pathField.getText() == null || pathField.getText().equals("") || !pathField.getText().contains("\\")) {
 			errorMessage += "경로를 입력하세요.\n";
 		}
+		for (int index = 0; index < Main.main.pathList.size(); index++) {
+			
+			if (Main.main.pathList.get(index).getPath().equals(pathField.getText())) {
+				errorMessage += "이미 추가된 경로입니다.\n";
+			}
+		}
+
 		if (errorMessage.equals("")) {
 			return true;
-			
+
 		} else {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.initOwner(dialogStage);

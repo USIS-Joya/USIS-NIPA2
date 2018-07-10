@@ -1,39 +1,30 @@
 package model;
 
-import java.io.File;
-
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.concurrent.Task;
-import javafx.scene.control.ProgressIndicator;
 
-public class performance extends Task {
+public class performance {
 	// 수행작업에 대한 정보를 저장하는 모델인 performance.java 생성
 	// 수행작업 TABLE COLUMN -> 파일명, 파일경로, 시작시간, 진행률
-
-	private static int MAX = 100;
-	private static int SLEEP_TIME = 200;
 
 	private StringProperty FileName;
 	private StringProperty FilePath;
 	private StringProperty startTime;
-	// private DoubleProperty progress;
+	private StringProperty progress;
 
-	public performance(String fileName, String filePath, String startTime) {
+
+	public performance(String fileName, String filePath, String startTime, String progress) {
 		this.FileName = new SimpleStringProperty(fileName);
 		this.FilePath = new SimpleStringProperty(filePath);
 		this.startTime = new SimpleStringProperty(startTime);
-		// this.progress = new SimpleDoubleProperty(progress);
-
+		this.progress = new SimpleStringProperty(progress);
 	}
 
 	public performance() {
 		FileName = new SimpleStringProperty();
 		FilePath = new SimpleStringProperty();
 		startTime = new SimpleStringProperty();
-		// progress = new SimpleDoubleProperty();
+	    progress = new SimpleStringProperty();
 	}
 
 	// File Name
@@ -75,41 +66,16 @@ public class performance extends Task {
 		return startTime;
 	}
 
-	// // file progress
-	// public double getprogress() {
-	// return progress.get();
-	// }
-	//
-	// public void setprogress(double progress) {
-	// this.progress.set(progress);
-	// }
-	//
-	// public DoubleProperty getprogressProperty() {
-	// return progress;
-	// }
-
-	@Override
-	protected Object call() throws Exception {
-		this.updateProgress(ProgressIndicator.INDETERMINATE_PROGRESS, 1);
-		Thread.sleep(3000);
-		for (int i = 0; i < MAX; i++) {
-			updateProgress(i, MAX);
-			Thread.sleep(SLEEP_TIME);
-		}
-		this.updateProgress(1, 1);
-		return null;
+	// file progress
+	public String getprogress() {
+		return progress.get();
 	}
 
-	// public double getProgressBar() {
-	// return Progress.get();
-	// }
-	//
-	// public void setProgressBar(double bar) {
-	// this.Progress.set(bar);
-	// }
-	//
-	// public SimpleDoubleProperty getProgressProperty() {
-	// return Progress;
-	// }
+	public void setprogress(String progress) {
+		this.progress.set(progress);
+	}
 
+	public StringProperty getprogressProperty() {
+		return progress;
+	}
 }
